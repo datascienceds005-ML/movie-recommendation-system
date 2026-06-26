@@ -17,3 +17,5 @@ venv/
 .coverage
 mlruns/
 .streamlit/secrets.toml
+data/processed/models.pkl
+data/processed/models.pkl
