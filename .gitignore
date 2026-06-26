@@ -19,3 +19,9 @@ mlruns/
 .streamlit/secrets.toml
 data/processed/models.pkl
 data/processed/models.pkl
+# Large model artifacts - never commit these
+data/processed/models.pkl
+data/processed/*.pkl
+data/processed/*.joblib
+*.pkl
+*.h5
