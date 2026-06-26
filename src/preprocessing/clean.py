@@ -1,4 +1,3 @@
-"""Phase 4 — Data Cleaning and Feature Preparation."""
 from typing import Tuple
 import pandas as pd
 
@@ -14,24 +13,23 @@ def handle_missing_values(movies: pd.DataFrame) -> pd.DataFrame:
 def remove_duplicate_ratings(ratings: pd.DataFrame) -> pd.DataFrame:
     before = len(ratings)
     out = ratings.drop_duplicates(subset=["userId", "movieId"], keep="last").copy()
-    removed = before - len(out)
-    if removed:
-        print(f"Removed {removed} duplicate (userId, movieId) rating rows.")
+    if before - len(out):
+        print(f"Removed {before - len(out)} duplicate rows.")
     return out
 
 
 def validate_ratings(ratings: pd.DataFrame) -> pd.DataFrame:
     out = ratings.copy()
-    n_before = len(out)
     out = out.dropna(subset=["userId", "movieId", "rating"])
     out = out[(out["rating"] >= 0.5) & (out["rating"] <= 5.0)]
-    if n_before - len(out):
-        print(f"Validation removed {n_before - len(out)} invalid rating rows.")
     return out
 
 
 def engineer_movie_features(movies: pd.DataFrame, ratings: pd.DataFrame) -> pd.DataFrame:
-    agg = ratings.groupby("movieId").agg(n_ratings=("rating", "size"), avg_rating=("rating", "mean"))
+    agg = ratings.groupby("movieId").agg(
+        n_ratings=("rating", "size"),
+        avg_rating=("rating", "mean")
+    )
     out = movies.merge(agg, on="movieId", how="left")
     out["n_ratings"] = out["n_ratings"].fillna(0).astype(int)
     out["genre_list"] = out["genres"].str.split("|")
@@ -44,7 +42,9 @@ def engineer_movie_features(movies: pd.DataFrame, ratings: pd.DataFrame) -> pd.D
 
 def engineer_user_features(ratings: pd.DataFrame) -> pd.DataFrame:
     out = ratings.groupby("userId").agg(
-        n_ratings=("rating", "size"), avg_rating=("rating", "mean"), rating_std=("rating", "std")
+        n_ratings=("rating", "size"),
+        avg_rating=("rating", "mean"),
+        rating_std=("rating", "std")
     ).reset_index()
     out["rating_std"] = out["rating_std"].fillna(0.0)
     return out
